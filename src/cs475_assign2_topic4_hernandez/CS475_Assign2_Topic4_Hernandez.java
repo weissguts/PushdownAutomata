@@ -9,7 +9,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- *
+ * Main Class - Creates DPA from input file. Tests user input string to see if
+ * language is acceptable.
  * @author Daniel Hernandez
  */
 public class CS475_Assign2_Topic4_Hernandez {

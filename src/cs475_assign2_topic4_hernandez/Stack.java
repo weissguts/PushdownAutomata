@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- *
+ * Stack class
  * @author Daniel Hernandez
  */
 public class Stack {

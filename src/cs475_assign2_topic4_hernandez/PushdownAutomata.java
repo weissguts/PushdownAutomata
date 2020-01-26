@@ -34,7 +34,7 @@ public class PushdownAutomata {
     static List<Character> tapeAlphabet = new ArrayList<>();
 
     /**
-     * Pop up box to user to select file for DFA guidelines.
+     * Pop up box to user to select file for DPA guidelines.
      *
      * @throws FileNotFoundException
      */
@@ -48,7 +48,7 @@ public class PushdownAutomata {
      * processFile - Big O for fileInput and processFile is O(n) since we are
      * just iterating through the while loop and there is nothing nested inside.
      *
-     * Sets the DFA guidelines to test against user input string.
+     * Sets the DPA guidelines to test against user input string.
      *
      * @throws IOException
      */
@@ -76,7 +76,7 @@ public class PushdownAutomata {
     }
 
     /**
-     * Sets start state to first line from DFA guidelines file.
+     * Sets start state to first line from DPA guidelines file.
      *
      * @param firstLine
      */
@@ -93,6 +93,10 @@ public class PushdownAutomata {
         acceptStates = Arrays.asList(secondLine.split(" "));
     }
 
+    /**
+     * Reads transition line updates states. 
+     * @param nextLine
+     */
     public static void readTransition(String nextLine) {
         //split line
         String[] lineString = nextLine.split(" ");
@@ -109,9 +113,6 @@ public class PushdownAutomata {
         if (!inputAlphabet.contains(transition.getInputSymbol())
                 && transition.getInputSymbol() != 'e') {
             inputAlphabet.add(transition.getInputSymbol());
-//            if (tapeAlphabet.get(3) == '$' && ( stack.peek() == 0)) {
-//                    stack.push('$');
-//                }
         }
         //add to States
         if (!states.contains(fromState)) {
@@ -124,10 +125,11 @@ public class PushdownAutomata {
     }
 
     /**
-     * run - Big O for run method is O(N * M) where "N" is input string length.
-     * "M" is number of transitions.
+     * run - Big O for run method is O(N^3) where "N" is input string length,
+     * number of transitions, and number of stackOperation Strings we convert
+     * to charArrays. - 3 loops should be O(N^3).
      *
-     * Compares user input String char by char against acceptable DFA
+     * Compares user input String char by char against acceptable DPA
      * guidelines.
      *
      * @param input
@@ -160,7 +162,7 @@ public class PushdownAutomata {
                 String stackOperation = transition.getStackOperation();
 
                 // Clear tapeAlphabet &
-                //convert stackOperation to CharArray tapeAlphabet.
+                // convert stackOperation to CharArray tapeAlphabet.
                 tapeAlphabet.clear();
                 for (char stackOperationString : stackOperation.toCharArray()) {
                     tapeAlphabet.add(stackOperationString);
@@ -219,7 +221,7 @@ public class PushdownAutomata {
     }
 
     /**
-     * Gives the user the acceptable inputAlphabet parameters from the DFA
+     * Gives the user the acceptable inputAlphabet parameters from the DPA
      * guidelines file.
      *
      * @return
