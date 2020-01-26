@@ -21,18 +21,17 @@ import java.util.List;
 public class PushdownAutomata {
 
     static Stack stack = new Stack();
-            
+
     private static String startState;
     private static List<String> acceptStates = new ArrayList<>();
     private static ArrayList<String> states = new ArrayList<>();
 
     static BufferedReader bufferedReader = null;
 
-    static List<Transition> transitions = new ArrayList<>();    
-    private static String currentState;  
+    static List<Transition> transitions = new ArrayList<>();
+    private static String currentState;
     static List<Character> inputAlphabet = new ArrayList<>();
     static List<Character> tapeAlphabet = new ArrayList<>();
-  
 
     /**
      * Pop up box to user to select file for DFA guidelines.
@@ -98,8 +97,8 @@ public class PushdownAutomata {
         //split line
         String[] lineString = nextLine.split(" ");
         String fromState = lineString[0];
-        String inputSymbol = lineString[1];  
-        String stackSymbol = lineString[3]; 
+        String inputSymbol = lineString[1];
+        String stackSymbol = lineString[3];
         String stackOperation = lineString[1].concat(lineString[2].concat(lineString[3]));
         String toState = lineString[4];
         //create transition
@@ -120,7 +119,7 @@ public class PushdownAutomata {
         }
         if (!states.contains(toState)) {
             states.add(toState);
-        }              
+        }
 
     }
 
@@ -148,66 +147,80 @@ public class PushdownAutomata {
             if (!inputAlphabet.contains(inputChars[i])) {
                 return false;
             }
+            //Add user input to top of stack.
+                    stack.push(inputChars[i]);
             //lookup transistions for current state
             for (Transition transition : transitions) {
+                
                 System.out.println(transition.toString());
                 //find transistions with split inputSymbol
-                boolean stateCheck = (currentState.equals(transition.getFromState()));                
+                boolean stateCheck = (currentState.equals(transition.getFromState()));
                 boolean inputSymbol = inputChars[i] == transition.getInputSymbol();
+             
                 String stackOperation = transition.getStackOperation();
-                
-                // Convert stackOperation to CharArray tapeAlphabet.
-                for (char c : stackOperation.toCharArray()) {
-                    tapeAlphabet.add(c); 
+
+                // Clear tapeAlphabet &
+                //convert stackOperation to CharArray tapeAlphabet.
+                tapeAlphabet.clear();
+                for (char stackOperationString : stackOperation.toCharArray()) {
+                    tapeAlphabet.add(stackOperationString);
                 }
-                
-                while (tapeAlphabet.contains('e')) {
-                    if (tapeAlphabet.get(1) == 'e') {
-                        currentState = transition.getToState();
-                        break;
-                    } else {
-                        stack.push(tapeAlphabet.get(3));
-                    }
 
-                    if (tapeAlphabet.get(2) == 'e') {
-                        currentState = transition.getToState();
-                        stack.push(tapeAlphabet.get(inputChars[i]));
-                        break;
-                    } else if(tapeAlphabet.get(2) != 'e')  {                        
-                        stack.pop();                       
-                    }
+                //If userInput matches DPA inputSYmbol 
+                //OR stackOperationString contains an "empty".
+                if (stateCheck && inputSymbol || tapeAlphabet.contains('e')) { 
+                   
+                    //Checking if "a" in "a, b-->c" is equal to "e"(empty). From
+                    //stackOperation string (tapeAlphabet). 
+                    while (tapeAlphabet.contains('e')) {
+                        //"If a is "empty" machine may make transition without reading
+                        //any symbol from input.
+                        if (tapeAlphabet.get(1) == 'e') {
+                            currentState = transition.getToState();
+                            break;
+                        } else {
+                            //If a is not "empty" replace symbol "b" at the top
+                            //of the stack with a "c". 
+                            if (tapeAlphabet.get(3) != 'e') {
+                                stack.pop(); //pop user input to replace with c.
+                                stack.push(tapeAlphabet.get(3));
+                                break;
+                            }
+                        }
 
-                    if (tapeAlphabet.get(3) == 'e') {
-                        stack.pop();
-                        currentState = transition.getToState();
-                        break;
-                    } else if(tapeAlphabet.get(3) != 'e') {
-                        
-                    }
-                    break;
-                } 
+                        //Checking if "b" in "a, b-->c" is equal to "e"(empty).
+                        //If "b" is empty, the machine may make this transition 
+                        //without reading any symbol from the input. 
+                        if (tapeAlphabet.get(2) == 'e') {
+                            currentState = transition.getToState();
+                            break;
+                        } else if (tapeAlphabet.get(2) != 'e') {
+                            stack.pop(); //pop user input from stack
+                            stack.push(tapeAlphabet.get(2)); //push "b" to stack. 
+                        }
 
-                if (stateCheck && inputSymbol) {
-                    currentState = transition.getToState();
-                    break;
+                        //Checking if "c" in "a, b-->c" is equal to "e"(empty).
+                        //If "c" is empty, the machine does not write any symbol
+                        //on the stack when going along this transition.
+                        if (tapeAlphabet.get(3) == 'e') {
+                            break;
+                        }                        
+                        break;
+                    }
                 }
+
             }
 
         }
         if (!acceptStates.contains(currentState)) {
             return false;
         }
-
         return true;
     }
-    
-    
-    
-    
 
     /**
-     * Gives the user the acceptable inputAlphabet parameters from the DFA guidelines
- file.
+     * Gives the user the acceptable inputAlphabet parameters from the DFA
+     * guidelines file.
      *
      * @return
      */
